@@ -49,7 +49,7 @@ def get_name(response):
 
 def get_count(response):
 
-    dates = response.xpath('//div/font/b[contains(.,"Average")]').re(r'Average: (\S*\d)')
+    dates = response.xpath('//table[1]/tr/td/font/a/text()|//table[1]/tr/td/font/text()').re(r'^\d+/\S*')
     count = len(dates)
 
     return count
