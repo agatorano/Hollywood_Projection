@@ -35,6 +35,7 @@ class BoxofficeSpider(Spider):
         item['name'] = get_name(response)
         item['years_active'] = get_years(response)
         item['average_gross'] = get_ave_gross(response)
+        item['movie_count'] = get_count(response)
 
         yield item
 
@@ -44,6 +45,14 @@ def get_name(response):
     name = response.xpath('//td/h1/text()').extract_first()
 
     return name
+
+
+def get_count(response):
+
+    dates = response.xpath('//div/font/b[contains(.,"Average")]').re(r'Average: (\S*\d)')
+    count = len(dates)
+
+    return count
 
 
 def get_years(response):
