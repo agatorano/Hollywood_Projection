@@ -1,11 +1,14 @@
-# -*- coding: utf-8 -*-
-
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
+from scrapy.exceptions import DropItem
 
 
-class HollywoodCrawlerPipeline(object):
+class DuplicatePipeline(object):
+
+    def __init__(self):
+        self.dir_seen = set()
+
     def process_item(self, item, spider):
-        return item
+        if item['name'] in self.dir_seen:
+            raise DropItem("Duplicate director found: %s" % item)
+        else:
+            self.dir_seen.add(item['name'])
+            return item

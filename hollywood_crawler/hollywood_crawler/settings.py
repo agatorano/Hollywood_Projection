@@ -15,9 +15,12 @@ SPIDER_MODULES = ['hollywood_crawler.spiders']
 NEWSPIDER_MODULE = 'hollywood_crawler.spiders'
 
 DOWNLOAD_HANDLERS = {
-          's3': None,
-          }
+    's3': None,
+    }
 
+ITEM_PIPELINES = {
+    'hollywood_crawler.pipelines.DuplicatePipeline': 300,
+}
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'hollywood_crawler (+http://www.yourdomain.com)'
@@ -65,9 +68,6 @@ DOWNLOAD_HANDLERS = {
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'hollywood_crawler.pipelines.SomePipeline': 300,
-#}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html

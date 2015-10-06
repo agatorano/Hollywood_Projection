@@ -13,6 +13,10 @@ class BoxofficeSpider(Spider):
         "http://www.boxofficemojo.com/people/?view=Director&sort=sumgross"
         ]
 
+    def __init__(self):
+        self.page_seen = set()
+        self.page_seen.add("http://www.boxofficemojo.com/people/?view=Director&pagenum=1&sort=sumgross&order=DESC&&p=.htm")
+
     def parse(self, response):
         """
 
@@ -28,6 +32,17 @@ class BoxofficeSpider(Spider):
         for href in links:
             url = response.urljoin(href)
             yield scrapy.Request(url, callback=self.parse_director_page)
+
+        pages = response.xpath('//font[@size=4]/b/a/@href').extract()
+        
+        for page in pages:
+            page = response.urljoin(page)
+            if page not in self.page_seen:
+                next_page = page
+                self.page_seen.add(page)
+
+        yield scrapy.Request(next_page, callback=self.parse)
+
 
     def parse_director_page(self, response):
 
