@@ -14,6 +14,10 @@ BOT_NAME = 'hollywood_crawler'
 SPIDER_MODULES = ['hollywood_crawler.spiders']
 NEWSPIDER_MODULE = 'hollywood_crawler.spiders'
 
+DOWNLOAD_HANDLERS = {
+          's3': None,
+          }
+
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'hollywood_crawler (+http://www.yourdomain.com)'
