@@ -2,6 +2,7 @@ from datetime import datetime
 
 from scrapy.spiders import Spider
 from hollywood_crawler.items import HollywoodItem
+import scrapy
 
 
 class BoxofficeSpider(Spider):
@@ -9,7 +10,7 @@ class BoxofficeSpider(Spider):
     name = "boxoffice"
     allowed_domains = ["boxofficemojo.com"]
     start_urls = [
-        "http://www.boxofficemojo.com/people/chart/?view=Director&id=stevenspielberg.htm"
+        "http://www.boxofficemojo.com/people/?view=Director&sort=sumgross"
         ]
 
     def parse(self, response):
@@ -22,8 +23,15 @@ class BoxofficeSpider(Spider):
         films.
 
         """
-        item = HollywoodItem()
 
+        links = response.xpath('//td/font/a[contains(@href,"chart")]/@href').extract()
+        for href in links:
+            url = response.urljoin(href)
+            yield scrapy.Request(url, callback=self.parse_director_page)
+
+    def parse_director_page(self, response):
+
+        item = HollywoodItem()
         item['name'] = get_name(response)
         item['years_active'] = get_years(response)
         item['average_gross'] = get_ave_gross(response)
@@ -51,7 +59,7 @@ def get_years(response):
 
 def get_ave_gross(response):
 
-    ave_gross = response.xpath('//td[1]/font/b').re(r'Average: (\S*\d)')[0]
+    ave_gross = response.xpath('//div/font/b[contains(.,"Average")]').re(r'Average: (\S*\d)')[0]
     ave_gross = int(ave_gross.replace("$", "").replace(",", ""))
 
     return ave_gross

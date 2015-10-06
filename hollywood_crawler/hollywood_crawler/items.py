@@ -6,7 +6,7 @@ class HollywoodItem(Item):
     name = Field()
     years_active = Field()
     average_gross = Field()
-    #movie_count = Field()
+    movie_count = Field()
     #gross_diff = Field()
 
     pass
