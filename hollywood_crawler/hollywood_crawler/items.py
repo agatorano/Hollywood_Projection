@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
-
-# Define here the models for your scraped items
-#
-# See documentation in:
-# http://doc.scrapy.org/en/latest/topics/items.html
-
-import scrapy
+from scrapy.item import Item, Field
 
 
-class HollywoodCrawlerItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
+class HollywoodItem(Item):
+
+    name = Field()
+    years_active = Field()
+    average_gross = Field()
+    #movie_count = Field()
+    #gross_diff = Field()
+
     pass
