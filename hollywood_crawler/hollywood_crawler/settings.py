@@ -20,6 +20,7 @@ DOWNLOAD_HANDLERS = {
 
 ITEM_PIPELINES = {
     'hollywood_crawler.pipelines.DuplicatesPipeline': 300,
+    'hollywood_crawler.pipelines.Drop_Negative_Year': 500,
 }
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent

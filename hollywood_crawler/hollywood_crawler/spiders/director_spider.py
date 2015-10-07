@@ -83,7 +83,7 @@ def get_years(response):
     first_d = datetime.strptime(dates[0], "%m/%d/%y")
     last_d = datetime.strptime(dates[-1], "%m/%d/%y")
     years = (first_d-last_d)
-    years = years.days/365
+    years = (years.days/365)+1
 
     return years
 

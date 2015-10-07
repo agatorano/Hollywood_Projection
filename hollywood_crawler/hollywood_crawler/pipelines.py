@@ -12,3 +12,13 @@ class DuplicatesPipeline(object):
         else:
             self.dir_seen.add(item['name'])
             return item
+
+
+class Drop_Negative_Year(object):
+
+    def process_item(self, item, spider):
+
+        if item['years_active'] < 0:
+            raise DropItem("Negative Year Found: %s" % item)
+        else:
+            return item
