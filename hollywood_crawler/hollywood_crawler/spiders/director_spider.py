@@ -31,6 +31,7 @@ class BoxofficeSpider(Spider):
         links = response.xpath('//td/font/a[contains(@href,"chart")]/@href').extract()
         for href in links:
             url = response.urljoin(href)
+            print ("*********\n\n%s\n\n*********"%url)
             yield scrapy.Request(url, callback=self.parse_director_page)
 
         pages = response.xpath('//font[@size=4]/b/a/@href').extract()
@@ -39,7 +40,12 @@ class BoxofficeSpider(Spider):
             page = response.urljoin(page)
             if page not in self.page_seen:
                 next_page = page
+                print ("################\n\n%s\n\n################"%next_page)
                 self.page_seen.add(page)
+                break
+            else:
+                print "last page"
+
 
         yield scrapy.Request(next_page, callback=self.parse)
 
