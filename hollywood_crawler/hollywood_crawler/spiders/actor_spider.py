@@ -7,10 +7,10 @@ import scrapy
 
 class ActorSpider(Spider):
 
-    name = "actors"
+    name = "actor"
     allowed_domains = ["boxofficemojo.com"]
     start_urls = [
-        "http://www.boxofficemojo.com/people/?view=Actor&pagenum=2&sort=sumgross&order=DESC&&p=.htm"
+        "http://www.boxofficemojo.com/people/?view=Actor&sort=sumgross&order=DESC&p=.htm"
         ]
 
     def __init__(self):
@@ -20,7 +20,7 @@ class ActorSpider(Spider):
     def parse(self, response):
         """
 
-        Scrapy Spider to scrape boxofficemojo.com for Actor
+        Scrapy Spider to scrape boxofficemojo.com for director
         data.
 
         follows links through director profiles and their respective
@@ -52,44 +52,63 @@ class ActorSpider(Spider):
 
         item = HollywoodItem()
 
-        item['name'] = get_name(response)
-        item['years_active'] = get_years(response)
-        item['average_gross'] = get_ave_gross(response)
-        item['movie_count'] = get_count(response)
+        item['name'] = self.get_name(response)
+        item['years_active'] = self.get_years(response)
+        item['average_gross'] = self.get_ave_gross(response)
+        item['movie_count'] = self.get_count(response)
 
-        yield item
+        links = response.xpath('//table/tr/td[1]/table/tr/td[2]/font/a/@href').extract()[1:]
+        for href in links:
+            url = response.urljoin(links[0])
+            request = scrapy.Request(url, callback=self.parse_movie_page)
+            request.meta['item'] = item
+            yield request
 
+    def parse_movie_page(self, response):
 
-def get_name(response):
+        item = response.meta['item']
 
-    name = response.xpath('//td/h1/text()').extract_first()
+        if self.get_budget(response):
+            item['budgets'] = self.get_budget(response)
+            yield item
 
-    return name
+    def get_name(self, response):
 
+        name = response.xpath('//td/h1/text()').extract_first()
+        return name
 
-def get_count(response):
+    def get_budget(self, response):
 
-    dates = response.xpath('//table[1]/tr/td/font/a/text()|//table[1]/tr/td/font/text()').re(r'^\d+/\S*')
-    count = len(dates)
+        budget = response.xpath('//td[contains(text(),"Budget")]/b/text()').extract()[0]
+        if 'million' in budget:
+            budget = budget.replace("$", "").replace(" ", "").replace("million", "000000")
+            if "." in budget:
+                budget = budget.replace(".", "")[:-1]
+            return budget
+        elif '000' in budget:
+            budget = int(budget.replace("$", "").replace(",", ""))
+            return budget
 
-    return count
+    def get_count(self, response):
 
+        dates = response.xpath('//table[1]/tr/td/font/a/text()|//table[1]/tr/td/font/text()').re(r'^\d+/\S*')
+        count = len(dates)
 
-def get_years(response):
+        return count
 
-    dates = response.xpath('//table[1]/tr/td/font/a/text()|//table[1]/tr/td/font/text()').re(r'^\d+/\S*')
-    first_d = datetime.strptime(dates[0], "%m/%d/%y")
-    last_d = datetime.strptime(dates[-1], "%m/%d/%y")
-    years = (first_d-last_d)
-    years = (years.days/365)+1
+    def get_years(self, response):
 
-    return years
+        dates = response.xpath('//table[1]/tr/td/font/a/text()|//table[1]/tr/td/font/text()').re(r'^\d+/\S*')
+        first_d = datetime.strptime(dates[0], "%m/%d/%y")
+        last_d = datetime.strptime(dates[-1], "%m/%d/%y")
+        years = (first_d-last_d)
+        years = (years.days/365)+1
 
+        return years
 
-def get_ave_gross(response):
+    def get_ave_gross(self, response):
 
-    ave_gross = response.xpath('//div/font/b[contains(.,"Average")]').re(r'Average: (\S*\d)')[0]
-    ave_gross = int(ave_gross.replace("$", "").replace(",", ""))
+        ave_gross = response.xpath('//div/font/b[contains(.,"Average")]').re(r'Average: (\S*\d)')[0]
+        ave_gross = int(ave_gross.replace("$", "").replace(",", ""))
 
-    return ave_gross
-
+        return ave_gross
