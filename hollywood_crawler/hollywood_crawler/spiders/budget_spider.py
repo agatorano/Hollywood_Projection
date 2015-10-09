@@ -72,8 +72,7 @@ class BudgetSpider(Spider):
         item = response.meta['item']
 
         if get_budget(response):
-            item['budgets'].append(get_budget(response))
-
+            item['budgets'] = get_budget(response)
 
 def get_name(response):
 
