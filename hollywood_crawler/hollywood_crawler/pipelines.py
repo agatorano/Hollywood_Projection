@@ -22,3 +22,13 @@ class Drop_Negative_Year(object):
             raise DropItem("Negative Year Found: %s" % item)
         else:
             return item
+
+
+class Drop_No_Budget(object):
+
+    def process_item(self, item, spider):
+
+        if 'budgets' not in item:
+            raise DropItem("No last budget")
+        else:
+            return item
