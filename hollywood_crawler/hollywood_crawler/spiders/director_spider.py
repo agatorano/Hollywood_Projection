@@ -5,9 +5,9 @@ from hollywood_crawler.items import HollywoodItem
 import scrapy
 
 
-class BudgetSpider(Spider):
+class DirectorSpider(Spider):
 
-    name = "budget"
+    name = "director"
     allowed_domains = ["boxofficemojo.com"]
     start_urls = [
         "http://www.boxofficemojo.com/people/?view=Director&sort=sumgross"
