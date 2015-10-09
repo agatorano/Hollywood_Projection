@@ -56,23 +56,27 @@ class BudgetSpider(Spider):
         item['years_active'] = get_years(response)
         item['average_gross'] = get_ave_gross(response)
         item['movie_count'] = get_count(response)
-        item['budgets'] = []
 
         links = response.xpath('//table/tr/td[1]/table/tr/td[2]/font/a/@href').extract()[1:]
+        budgets = []
         for href in links:
             url = response.urljoin(href)
             request = scrapy.Request(url, callback=self.parse_movie_page)
             request.meta['item'] = item
+            request.meta['budgets'] = budgets
             yield request
+        item['budgets'] = budgets
 
         yield item
 
     def parse_movie_page(self, response):
 
         item = response.meta['item']
+        budgets = response.meta['budgets']
 
         if get_budget(response):
-            item['budgets'] = get_budget(response)
+            budgets.append(get_budget(response))
+        yield budgets
 
 def get_name(response):
 
