@@ -56,6 +56,7 @@ class BudgetSpider(Spider):
         item['years_active'] = get_years(response)
         item['average_gross'] = get_ave_gross(response)
         item['movie_count'] = get_count(response)
+        item['budgets'] = []
 
         links = response.xpath('//table/tr/td[1]/table/tr/td[2]/font/a/@href').extract()[1:]
         for href in links:
@@ -71,7 +72,7 @@ class BudgetSpider(Spider):
         item = response.meta['item']
 
         if get_budget(response):
-            item['budgets'] = get_budget(response)
+            item['budgets'].append(get_budget(response))
 
 
 def get_name(response):
