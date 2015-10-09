@@ -10,12 +10,12 @@ class ActorSpider(Spider):
     name = "actors"
     allowed_domains = ["boxofficemojo.com"]
     start_urls = [
-        "http://www.boxofficemojo.com/people/?view=Director&sort=sumgross"
+        "http://www.boxofficemojo.com/people/?view=Actor&pagenum=2&sort=sumgross&order=DESC&&p=.htm"
         ]
 
     def __init__(self):
         self.page_seen = set()
-        self.page_seen.add("http://www.boxofficemojo.com/people/?view=actor&sort=sumgross&p=.htm")
+        self.page_seen.add("http://www.boxofficemojo.com/people/?view=Actor&pagenum=1&sort=sumgross&order=DESC&&p=.htm")
 
     def parse(self, response):
         """
