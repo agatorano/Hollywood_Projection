@@ -15,7 +15,6 @@ class BudgetSpider(Spider):
 
     def __init__(self):
         self.page_seen = set()
-        self.budget_list = []
         self.page_seen.add("http://www.boxofficemojo.com/people/?view=Director&pagenum=1&sort=sumgross&order=DESC&&p=.htm")
 
     def parse(self, response):
@@ -31,7 +30,6 @@ class BudgetSpider(Spider):
 
         links = response.xpath('//td/font/a[contains(@href,"chart")]/@href').extract()
         for href in links:
-            self.budget_list = []
             url = response.urljoin(href)
             yield scrapy.Request(url, callback=self.parse_director_page)
 
@@ -58,22 +56,25 @@ class BudgetSpider(Spider):
         item['years_active'] = self.get_years(response)
         item['average_gross'] = self.get_ave_gross(response)
         item['movie_count'] = self.get_count(response)
+        item['stop'] = False
 
         links = response.xpath('//table/tr/td[1]/table/tr/td[2]/font/a/@href').extract()[1:]
-        #for href in links:
-        url = response.urljoin(links[0])
-        request = scrapy.Request(url, callback=self.parse_movie_page)
-        request.meta['item'] = item
-        yield request
-
-        yield item
+        for href in links:
+            if item['stop'] is True:
+                break
+            url = response.urljoin(links[0])
+            request = scrapy.Request(url, callback=self.parse_movie_page)
+            request.meta['item'] = item
+            yield request
 
     def parse_movie_page(self, response):
 
         item = response.meta['item']
 
         if self.get_budget(response):
-            item['budget'] = self.get_budget(response)
+            item['budgets'] = self.get_budget(response)
+            item['stop'] = True
+            yield item
 
     def get_name(self, response):
 

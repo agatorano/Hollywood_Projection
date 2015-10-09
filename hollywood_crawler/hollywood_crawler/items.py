@@ -8,3 +8,4 @@ class HollywoodItem(Item):
     average_gross = Field()
     movie_count = Field()
     budgets = Field()
+    stop = Field()
