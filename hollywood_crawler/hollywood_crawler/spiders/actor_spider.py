@@ -20,7 +20,7 @@ class ActorSpider(Spider):
     def parse(self, response):
         """
 
-        Scrapy Spider to scrape boxofficemojo.com for director
+        Scrapy Spider to scrape boxofficemojo.com for actor
         data.
 
         follows links through director profiles and their respective
