@@ -1,12 +1,18 @@
 import pandas as pd
-#import seaborn as sns
-#from patsy import dmatrices
-#import statsmodels.api as sm
+import matplotlib.pyplot as plt
 import movie_analysis as mv
 
 
 def show_hist(data):
     pd.DataFrame.hist(data)
+
+
+def show_scatter(data, col):
+
+    if col:
+        pd.scatter_matrix(data, figsize=(10, 10))
+    else:
+        pd.scatter_matrix(data, figsize=(10, 10))
 
 
 def main():
