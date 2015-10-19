@@ -7,6 +7,11 @@ import statsmodels.api as sm
 
 
 def get_data():
+
+    '''
+    Load the data from the Json files created in the crawl
+    '''
+    
     with open('directors.json') as data_file:
         data_dir = json.load(data_file)
     with open('actors.json') as data_file:
@@ -15,6 +20,11 @@ def get_data():
 
 
 def create_dataframe(data_in):
+
+    '''
+    process the Json data sets to conform to pandas
+    I add column names, as well as create new log columns for analysis
+    '''
 
     data_p = [(x['average_gross'], x['movie_count'], x['years_active'], x['budgets']) for x in data_in]
 
@@ -32,6 +42,12 @@ def create_dataframe(data_in):
 
 def handle_log_columns(data):
 
+    '''
+    creates log columns
+    they are created for:
+        average gross, years active, movies created/apart of, recent budget
+    '''
+
     log_col = ['log_average',  'log_years',  'log_count',  'log_budget']
 
     data[log_col[0]] = np.log(data.average_gross)
@@ -44,9 +60,27 @@ def handle_log_columns(data):
 
 def create_young_old_bin(data):
 
+    '''
+    created a column that has a boolean value for experience or unexperienced
+    the value cuttoff is optimized for creating balanced data,
+    for both directors and actors
+    '''
+
     f = lambda x: 1 if x > 13 else 0
     data['bin_young_old'] = data.applymap(f).years_active
 
+    return data
+
+
+def filter_early_directors(data):
+
+    '''
+    After investigating the histograms of directors,
+    it can be seen that there are far too many directors with only one movie.
+    To create a more normal distribution of directors this year is removed
+    '''
+
+    data = data[data.years_active > 1]
     return data
 
 
